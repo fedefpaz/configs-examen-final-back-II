@@ -20,6 +20,17 @@ spring:
     console:
       enabled: true
       path: /h2-console
+  rabbitmq:
+    username: guest
+    password: guest
+    host: rabbit-mq
+    port: 5672
+    
+queue:
+  movie:
+    name: movieQueue
+zipkin:
+  base-url: http://zipkin:9411/
       
 eureka:
   instance:
@@ -32,6 +43,12 @@ eureka:
 message: Hello from Movie Server
 
 management:
+  health:
+    circuitbreakers:
+      enabled: true
+  info:
+    env:
+      enabled: true
   endpoints:
     web:
       exposure:
