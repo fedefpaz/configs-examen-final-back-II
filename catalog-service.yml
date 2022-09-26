@@ -14,7 +14,6 @@ spring:
     mongodb:
       database: catalogBackendFinal
       port: 27017
-      host: mongodb2
   rabbitmq:
     username: guest
     password: guest
