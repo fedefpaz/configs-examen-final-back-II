@@ -9,11 +9,22 @@ eureka:
     service-url:
       defaultZone: http://localhost:8761/eureka
       
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+
+
+server:
+  port: 8085
 spring:
   data:
     mongodb:
       database: catalogBackendFinal
       port: 27017
+      host: localhost
   rabbitmq:
     username: guest
     password: guest
@@ -24,20 +35,10 @@ queue:
     name: serieQueue
   movie:
     name: movieQueue
-    
-resilience4j:
-  circuitbreaker:
-    instances:
-      movies:
-        slidingWindowType: COUNT_BASED
-        slidingWindowSize: 5
-        failureRateThreshold: 50
-        automaticTransitionFromOpenToHalfOpenEnabled: true
-        waitDurationInOpenState: 15000
-        permittedNumberOfCallsInHalfOpenState: 3
-        registerHealthIndicator: true
-        allowHealthIndicatorToFail: false
+zipkin:
+  base-url: http://localhost:9411/
 
+#actuator 
 management:
   health:
     circuitbreakers:
@@ -48,6 +49,54 @@ management:
   endpoints:
     web:
       exposure:
-        include: '*'
-              
-message: Hello from Catalog Server
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+info:
+  name: catalog-service
+  description: catalog
+  version: 1.0.0
+  date: 2022-09-26
+
+#circuit breaker
+resilience4j.circuitbreaker:
+    instances:
+        movieCB:
+            allowHealthIndicatorToFail: false
+            registerHealthIndicator: true
+            slidingWindowType: TIME_BASED
+            slidingWindowSize: 5
+            failureRateThreshold: 50
+            waitDurationInOpenState: 5s
+            permittedNumberOfCallsInHalfOpenState: 3
+            automaticTransitionFromOpenToHalfOpenEnabled: true
+        serieCB:
+            allowHealthIndicatorToFail: false
+            registerHealthIndicator: true
+            slidingWindowType: TIME_BASED
+            slidingWindowSize: 5
+            failureRateThreshold: 50
+            waitDurationInOpenState: 5s
+            permittedNumberOfCallsInHalfOpenState: 3
+            automaticTransitionFromOpenToHalfOpenEnabled: true
+
+resilience4j.retry:
+    instances:
+        movieCB:
+            maxAttempts: 3
+            waitDuration: 1s
+            retryExceptions:
+              - org.springframework.web.client.HttpServerErrorException
+              - java.io.IOException
+              - feign.FeignException$InternalServerError
+            ignoreExceptions:
+        serieCB:
+            maxAttempts: 3
+            waitDuration: 1s
+            retryExceptions:
+              - org.springframework.web.client.HttpServerErrorException
+              - java.io.IOException
+              - feign.FeignException$InternalServerError
+
+message: hello from catalog-service
