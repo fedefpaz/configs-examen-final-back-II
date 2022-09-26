@@ -1,33 +1,33 @@
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+
+message: hello from serie-service
+
 server:
   port: 8083
-  
 spring:
   data:
     mongodb:
-      port: 27017
       database: seriesBackendFinal
+      port: 27017
+      host: localhost
   rabbitmq:
     username: guest
     password: guest
     host: localhost
     port: 5672
-    
+
 queue:
   movie:
     name: serieQueue
 zipkin:
   base-url: http://localhost:9411/
 
-eureka:
-  instance:
-    hostname: localhost
-    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
-  client:
-    serviceUrl:
-      defaultZone: http://localhost:8761/eureka/
-      
-message: Hello from Serie Server
-
+#actuator 
 management:
   health:
     circuitbreakers:
@@ -38,4 +38,12 @@ management:
   endpoints:
     web:
       exposure:
-        include: '*'
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+info:
+  name: serie-service
+  description: serie
+  version: 1.0.0
+  date: 2022-09-26
