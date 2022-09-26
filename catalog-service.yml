@@ -8,11 +8,75 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
-     
-message: Hello from Catalog Server
+      
+spring:
+  data:
+    mongodb:
+      database: catalogBackendFinal
+      port: 27017
+      host: mongodb2
+  rabbitmq:
+    username: guest
+    password: guest
+    host: rabbit-mq
+    port: 5672
+queue:
+  serie:
+    name: serieQueue
+  movie:
+    name: movieQueue
+zipkin:
+  base-url: http://zipkin:9411/
 
 management:
+  health:
+    circuitbreakers:
+      enabled: true
+  info:
+    env:
+      enabled: true
   endpoints:
     web:
       exposure:
         include: '*'
+
+resilience4j.circuitbreaker:
+    instances:
+        movieCB:
+            allowHealthIndicatorToFail: false
+            registerHealthIndicator: true
+            slidingWindowType: TIME_BASED
+            slidingWindowSize: 5
+            failureRateThreshold: 50
+            waitDurationInOpenState: 5s
+            permittedNumberOfCallsInHalfOpenState: 3
+            automaticTransitionFromOpenToHalfOpenEnabled: true
+        serieCB:
+            allowHealthIndicatorToFail: false
+            registerHealthIndicator: true
+            slidingWindowType: TIME_BASED
+            slidingWindowSize: 5
+            failureRateThreshold: 50
+            waitDurationInOpenState: 5s
+            permittedNumberOfCallsInHalfOpenState: 3
+            automaticTransitionFromOpenToHalfOpenEnabled: true
+
+resilience4j.retry:
+    instances:
+        movieCB:
+            maxAttempts: 3
+            waitDuration: 1s
+            retryExceptions:
+              - org.springframework.web.client.HttpServerErrorException
+              - java.io.IOException
+              - feign.FeignException$InternalServerError
+            ignoreExceptions:
+        serieCB:
+            maxAttempts: 3
+            waitDuration: 1s
+            retryExceptions:
+              - org.springframework.web.client.HttpServerErrorException
+              - java.io.IOException
+              - feign.FeignException$InternalServerError
+              
+message: Hello from Catalog Server
