@@ -17,13 +17,15 @@ spring:
   rabbitmq:
     username: guest
     password: guest
-    host: rabbit-mq
+    host: localhost
     port: 5672
 queue:
   serie:
     name: serieQueue
   movie:
     name: movieQueue
+  subject:
+    name: catalogQueue
 zipkin:
   base-url: http://zipkin:9411/
 
