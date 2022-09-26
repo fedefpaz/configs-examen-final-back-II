@@ -1,49 +1,46 @@
 server:
-  port: 8081
-   
+  port: 8084
 spring:
-  autoconfigure:
-    exclude: org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
   datasource:
-    driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:movieDB
     username: sa
     password: sa
-  jpa:
-    opne-in-view: false
-    show-sql: true
-    hibernate:
-      ddl-auto: update
-    properties:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    jpa:
+      open-in-view: false
+      show-sql: true
       hibernate:
-        dialect: org.hibernate.dialect.H2Dialect
-        format_sql: true
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
+        ddl-auto: update
+      properties:
+        hibernate:
+          dialect: org.hibernate.dialect.H2Dialect
+          format_sql: true
+    h2:
+      console:
+        enabled: true
+        path: /h2-console
   rabbitmq:
     username: guest
     password: guest
     host: localhost
     port: 5672
-    
+
 queue:
   movie:
     name: movieQueue
 zipkin:
   base-url: http://localhost:9411/
-      
+
 eureka:
-  instance:
-    hostname: localhost
-    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka
-      
-message: Hello from Movie Server
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
 
+message: hello from movie-service
+
+#actuator 
 management:
   health:
     circuitbreakers:
@@ -54,4 +51,12 @@ management:
   endpoints:
     web:
       exposure:
-        include: '*'
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+info:
+  name: movie-service
+  description: movie
+  version: 1.0.0
+  date: 2022-09-26
