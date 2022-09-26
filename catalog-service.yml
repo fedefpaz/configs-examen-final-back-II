@@ -24,8 +24,6 @@ queue:
     name: serieQueue
   movie:
     name: movieQueue
-  subject:
-    name: catalogQueue
 zipkin:
   base-url: http://zipkin:9411/
 
